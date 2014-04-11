@@ -28,6 +28,21 @@ def cubic_interp(xi,yi):
 	c= np.linalg.solve(A,yi)
 	return c
 
+def poly_interp(xi,yi):
+	""" does a little cubic interpolation returning the coefficient array c"""	
+	error_message = "xi, yi need to be type numpy.ndarray"
+	assert (type(xi) is np.ndarray) and (type(yi) is np.ndarray), error_message
+	n = len(xi)
+	error_message = "You need the same number points"
+	assert (len(xi)==n) and (len(yi)==n), error_message
+	error_message = "The xi points have to be unique!"
+	assert (len(xi) == len(np.unique(xi))), error_message
+
+	xstack = [ xi**i for i in xrange(0,n)]
+	A = np.vstack(xstack).T
+	c= np.linalg.solve(A,yi)
+	return c
+
 def test_quad1():
 	""" This tests quad_interp with a specific set of points"""
 	xi = np.array([-1.,  0.,  2.])
@@ -51,6 +66,13 @@ def test_cubic():
 	yi = -10 +np.random.sample(4)*20
 	plot_cubic(xi,yi)
 	print "ok!"
+def test_poly():
+	number_of_points = np.random.randint(4,10)
+	""" This tests poly_interp with a random set of points"""
+	xi = -10 +np.random.sample(number_of_points)*20
+	yi = -10 +np.random.sample(number_of_points)*20
+	plot_poly(xi,yi)
+	print "ok!"
 
 def plot_quad(xi,yi):
 	"""plot the stuff"""
@@ -73,6 +95,20 @@ def plot_cubic(xi,yi):
 	plt.plot(x,y)
 	plt.plot(xi,yi,'ro')
 	plt.savefig('cubic.png')
+
+def plot_poly(xi,yi):
+	n = len(xi)
+	"""plot the stuff"""
+	plt.figure(1)
+	plt.clf()  
+	c = poly_interp(xi,yi)
+	x = np.linspace(xi.min() - 1,  xi.max() + 1, 1000)
+	y = c[n-1]
+	for j in range(n-1,0,-1):
+		y=y*x + c[j-1]
+	plt.plot(x,y)
+	plt.plot(xi,yi,'ro')
+	plt.savefig('poly.png')
 
 
 if __name__=="__main__":
